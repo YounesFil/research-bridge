@@ -1,0 +1,26 @@
+# Optional: run MySQL 8 in a container for teammates who do not have a local
+# MySQL install. The schema is loaded automatically on first start.
+#
+#   docker compose up -d
+#
+# Note: this publishes port 3306. If you already run MySQL locally on 3306,
+# stop it first or change the published port (e.g. "3307:3306") and update
+# backend/.env accordingly.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: research-bridge-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: research_bridge
+      MYSQL_USER: rb_app
+      MYSQL_PASSWORD: rb_local_dev
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+
+volumes:
+  mysql_data:
